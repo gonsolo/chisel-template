@@ -37,9 +37,9 @@ import circt.stage.ChiselStage
 import java.io.PrintWriter
 
 object GCDDriver extends App {
-  val v = ChiselStage.emitSystemVerilog(new GCD())
+  val verilog = ChiselStage.emitSystemVerilog(new GCD())
   new PrintWriter("GCDDriver.v") {
-    write(v)
+    write(verilog)
     close
   }
 }
