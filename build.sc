@@ -15,7 +15,6 @@ object GonsoTemplate extends SbtModule { m =>
     "-deprecation",
     "-feature",
     "-Xcheckinit",
-    "-P:chiselplugin:genBundleElements"
   )
   override def ivyDeps = Agg(
     ivy"org.chipsalliance::chisel:5.0.0",
