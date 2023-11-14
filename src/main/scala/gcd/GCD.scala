@@ -32,3 +32,14 @@ class GCD extends Module {
   io.outputGCD := x
   io.outputValid := y === 0.U
 }
+
+import circt.stage.ChiselStage
+import java.io.PrintWriter
+
+object GCDDriver extends App {
+  val v = ChiselStage.emitSystemVerilog(new GCD())
+  new PrintWriter("GCDDriver.v") {
+    write(v)
+    close
+  }
+}
