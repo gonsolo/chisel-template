@@ -22,7 +22,10 @@ class Ratio extends Bundle {
 }
 
 class SampledSpectrum extends Bundle {
-  val values = VecInit.fill(CONSTANTS.NUMBER_SPECTRUM_SAMPLES)(Wire(new PepeFloat))
+  //val values = VecInit.fill(CONSTANTS.NUMBER_SPECTRUM_SAMPLES)(0.U(32.W))
+  val r = new PepeFloat
+  val g = new PepeFloat
+  val b = new PepeFloat
 }
 
 class DiffuseInputBundle extends Bundle {
@@ -35,12 +38,13 @@ class DiffuseOutputBundle extends Bundle {
 }
 
 class Diffuse extends Module {
-  //val reflectance = IO(Flipped(Decoupled(new SampledSpectrum)))
+  val reflectance = IO(Flipped(Decoupled(new SampledSpectrum)))
   val directions = IO(Flipped(Decoupled(new DiffuseInputBundle)))
   val output = IO(Decoupled(new DiffuseOutputBundle))
 
   // TODO
 
+  reflectance.ready := true.B
   directions.ready := true.B
 
   output.bits.ratio.r.foo := 1.U
