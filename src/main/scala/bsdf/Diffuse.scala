@@ -3,20 +3,26 @@ package bsdf
 import chisel3._
 import chisel3.util.Decoupled
 
+object CONSTANTS {
+  val NUMBER_SPECTRUM_SAMPLES = 4
+}
+
+class PepeFloat extends Bundle {
+  val foo = UInt(32.W)
+}
+
 class Vector3 extends Bundle {
-  val x = UInt(16.W)
-  val y = UInt(16.W)
-  val z = UInt(16.W)
+  val x = new PepeFloat
+  val y = new PepeFloat
+  val z = new PepeFloat
 }
 
 class Ratio extends Bundle {
-  val r = UInt(16.W)
+  val r = new PepeFloat
 }
 
-class Spectrum extends Bundle {
-  var r = UInt(16.W)
-  var g = UInt(16.W)
-  var b = UInt(16.W)
+class SampledSpectrum extends Bundle {
+  val values = VecInit.fill(CONSTANTS.NUMBER_SPECTRUM_SAMPLES)(Wire(new PepeFloat))
 }
 
 class DiffuseInputBundle extends Bundle {
@@ -29,12 +35,13 @@ class DiffuseOutputBundle extends Bundle {
 }
 
 class Diffuse extends Module {
-  var reflectance = IO(Flipped(Decoupled(new Spectrum)))
-  val directions = IO(Flipped(Decoupled(new DiffuseInputBundle)))
+  //val reflectance = IO(Flipped(Decoupled(new SampledSpectrum)))
+  //val directions = IO(Flipped(Decoupled(new DiffuseInputBundle)))
   val output = IO(Decoupled(new DiffuseOutputBundle))
 
   // TODO
-  output.bits.ratio := 1.U
+  output.bits.ratio.r.foo := 1.U
+  output.valid := true.B
 }
 
 import circt.stage.ChiselStage

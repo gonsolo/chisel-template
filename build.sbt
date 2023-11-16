@@ -8,7 +8,7 @@ val chiselVersion = "5.1.0"
 
 lazy val root = (project in file("."))
   .settings(
-    name := "GonsoTemplate",
+    name := "Pepe",
     libraryDependencies ++= Seq(
       "org.chipsalliance" %% "chisel" % chiselVersion,
       "edu.berkeley.cs" %% "chiseltest" % "5.0.2" % "test"

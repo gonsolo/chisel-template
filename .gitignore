@@ -340,6 +340,6 @@ project/plugins/project/
 hs_err_pid*
 
 # gonsolo
-DecoupledGcd.anno.json
-DecoupledGcdDriver.v
+*.json
+*.v
 obj_dir

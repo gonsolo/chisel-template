@@ -3,49 +3,37 @@
 #include <iostream>
 #include <fstream>
 #include <verilated.h>
-#include "obj_dir/VDecoupledGcdDriver.h"
-
-uint64_t main_time = 0;
+#include "obj_dir/VDiffuse.h"
+#include "obj_dir/VDiffuse___024root.h"
 
 int main(int argc, char** argv) {
         using namespace std;
 
         Verilated::commandArgs(argc, argv);
-	VDecoupledGcdDriver gcdDriver;
+	VDiffuse diffuse;
 
 	std::cout << "Starting simulation." << std::endl;
 
-        //testbench.reset = 0;
-        //auto rootp = testbench.rootp;
+        diffuse.reset = 0;
+        auto rootp = diffuse.rootp;
         
         //float f = 0.3f;
         //cout << "Float input: " << f << endl;
         //rootp->io_float_input_value = bit_cast<uint32_t>(f);
         //rootp->io_input = 41;
 
-        //for (int i = 0; i < 10; i++) {
-        //        if (main_time == 0) {
-        //                //cout << "reset" << endl;
-        //                testbench.reset = 1;
-        //        } else {
-        //                testbench.reset = 0;
-        //        }
-        //        testbench.clock = main_time;
+	cout << "Value before simulation: " << (int)rootp->output_bits_ratio_r_foo << endl;
 
-        //        //if ((main_time % 2) == 0) {
-        //                //cout << "clock: 0" << endl;
-        //        //        testbench.clock = 1;
-        //        //}
-        //        //if ((main_time % 2) == 1) {
-        //                //cout << "clock: 1" << endl;
-        //        //        testbench.clock = 0;
-        //        //}
-        //        testbench.eval();
-
-        //        cout << (int)rootp->io_output << endl;
-
-        //        main_time++;
-        //}
+        for (uint64_t main_time  = 0; main_time < 5; main_time++) {
+                if (main_time == 0) {
+                        diffuse.reset = 1;
+                } else {
+                        diffuse.reset = 0;
+                }
+                diffuse.clock = main_time;
+                diffuse.eval();
+		cout << "Time: " << main_time << " value: " << rootp->output_bits_ratio_r_foo << endl;
+        }
 
         //float floatOutput = bit_cast<float>(rootp->io_float_output_value);
         //cout << "Float output: " << floatOutput << endl;

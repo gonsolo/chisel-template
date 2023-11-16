@@ -1,17 +1,19 @@
 all: compile
 
-.PHONY: run test compile c clean
+.PHONY: r run test compile c clean t test
 
-run: obj_dir/VDecoupledGcdDriver
-	@./obj_dir/VDecoupledGcdDriver
-obj_dir/VDecoupledGcdDriver: DecoupledGcdDriver.v Simulator.cpp
-	@verilator --build --cc --exe DecoupledGcdDriver.v Simulator.cpp
-DecoupledGcdDriver.v:
-	@sbt "runMain gcd.DecoupledGcdDriver"
+r: run
+run: obj_dir/VDiffuse
+	@./obj_dir/VDiffuse
+obj_dir/VDiffuse: Diffuse.v Simulator.cpp
+	@verilator --build --cc --exe $^
+Diffuse.v:
+	@sbt "runMain bsdf.Diffuse"
+t: test
 test:
 	sbt test
 compile:
 	sbt compile
 c: clean
 clean:
-	rm -rf DecoupledGcdDriver.v obj_dir DecoupledGCD.anno.json target test_run_dir
+	rm -rf Diffuse.v obj_dir *.json target test_run_dir
