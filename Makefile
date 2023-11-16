@@ -1,4 +1,7 @@
-.PHONY: run
+all: compile
+
+.PHONY: run test compile c clean
+
 run: obj_dir/VDecoupledGcdDriver
 	@./obj_dir/VDecoupledGcdDriver
 obj_dir/VDecoupledGcdDriver: DecoupledGcdDriver.v Simulator.cpp

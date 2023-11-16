@@ -3,29 +3,38 @@ package bsdf
 import chisel3._
 import chisel3.util.Decoupled
 
-class DiffuseInputBundle(val w: Int) extends Bundle {
-  val value1 = UInt(w.W)
-  val value2 = UInt(w.W)
+class Vector3 extends Bundle {
+  val x = UInt(16.W)
+  val y = UInt(16.W)
+  val z = UInt(16.W)
 }
 
-class DiffuseOutputBundle(val w: Int) extends Bundle {
-  val value1 = UInt(w.W)
-  val value2 = UInt(w.W)
-  val gcd    = UInt(w.W)
+class Ratio extends Bundle {
+  val r = UInt(16.W)
 }
 
-class Diffuse(width: Int) extends Module {
-  val input = IO(Flipped(Decoupled(new DiffuseInputBundle(width))))
-  val output = IO(Decoupled(new DiffuseOutputBundle(width)))
+class DiffuseInputBundle extends Bundle {
+  val outDirection = new Vector3
+  val inDirection = new Vector3
+}
+
+class DiffuseOutputBundle extends Bundle {
+  val ratio = new Ratio
+}
+
+class Diffuse extends Module {
+  val input = IO(Flipped(Decoupled(new DiffuseInputBundle)))
+  val output = IO(Decoupled(new DiffuseOutputBundle))
 
   // TODO
+  output.bits.ratio := 1.U
 }
 
 import circt.stage.ChiselStage
 import java.io.PrintWriter
 
 object Diffuse extends App {
-  val verilog = ChiselStage.emitSystemVerilog(new Diffuse(8))
+  val verilog = ChiselStage.emitSystemVerilog(new Diffuse)
   new PrintWriter("Diffuse.v") {
     write(verilog)
     close
