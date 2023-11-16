@@ -13,6 +13,12 @@ class Ratio extends Bundle {
   val r = UInt(16.W)
 }
 
+class Spectrum extends Bundle {
+  var r = UInt(16.W)
+  var g = UInt(16.W)
+  var b = UInt(16.W)
+}
+
 class DiffuseInputBundle extends Bundle {
   val outDirection = new Vector3
   val inDirection = new Vector3
@@ -23,7 +29,8 @@ class DiffuseOutputBundle extends Bundle {
 }
 
 class Diffuse extends Module {
-  val input = IO(Flipped(Decoupled(new DiffuseInputBundle)))
+  var reflectance = IO(Flipped(Decoupled(new Spectrum)))
+  val directions = IO(Flipped(Decoupled(new DiffuseInputBundle)))
   val output = IO(Decoupled(new DiffuseOutputBundle))
 
   // TODO
