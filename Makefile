@@ -3,11 +3,11 @@ all: compile
 .PHONY: r run test compile c clean t test
 
 r: run
-run: obj_dir/VDiffuse
+run: obj_dir/VDiffuse 
 	@./obj_dir/VDiffuse
 obj_dir/VDiffuse: Diffuse.v Simulator.cpp
 	@verilator --build --cc --exe $^
-Diffuse.v:
+Diffuse.v: src/main/scala/bsdf/Diffuse.scala
 	@sbt "runMain bsdf.Diffuse"
 t: test
 test:
