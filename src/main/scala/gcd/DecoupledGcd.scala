@@ -71,3 +71,14 @@ class DecoupledGcd(width: Int) extends Module {
     }
   }
 }
+
+import circt.stage.ChiselStage
+import java.io.PrintWriter
+
+object DecoupledGcdDriver extends App {
+  val verilog = ChiselStage.emitSystemVerilog(new DecoupledGcd(8))
+  new PrintWriter("DecoupledGcdDriver.v") {
+    write(verilog)
+    close
+  }
+}

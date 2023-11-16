@@ -3,7 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <verilated.h>
-#include "obj_dir/VGCDDriver.h"
+#include "obj_dir/VDecoupledGcdDriver.h"
 
 uint64_t main_time = 0;
 
@@ -11,7 +11,7 @@ int main(int argc, char** argv) {
         using namespace std;
 
         Verilated::commandArgs(argc, argv);
-	VGCDDriver gcdDriver;
+	VDecoupledGcdDriver gcdDriver;
 
 	std::cout << "Starting simulation." << std::endl;
 
