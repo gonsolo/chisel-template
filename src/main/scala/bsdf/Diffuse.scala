@@ -22,10 +22,7 @@ class Ratio extends Bundle {
 }
 
 class SampledSpectrum extends Bundle {
-  //val values = VecInit.fill(CONSTANTS.NUMBER_SPECTRUM_SAMPLES)(0.U(32.W))
-  val r = new PepeFloat
-  val g = new PepeFloat
-  val b = new PepeFloat
+  val values = Mem(CONSTANTS.NUMBER_SPECTRUM_SAMPLES, new PepeFloat)
 }
 
 class DiffuseInputBundle extends Bundle {
