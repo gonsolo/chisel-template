@@ -11,6 +11,11 @@ class PepeFloat extends Bundle {
   val foo = UInt(32.W)
 }
 
+case class FloatingType(exponent: Int, significand: Int) {
+
+  def recode(x: UInt) = hardfloat.recFNFromFN(exponent, significand, x)
+}
+
 class Vector3 extends Bundle {
   val x = new PepeFloat
   val y = new PepeFloat
