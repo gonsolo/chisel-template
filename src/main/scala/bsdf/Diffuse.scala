@@ -1,19 +1,29 @@
 package bsdf
 
+import scala.math.Pi
 import chisel3._
 import chisel3.util.Decoupled
 
 object CONSTANTS {
   val NUMBER_SPECTRUM_SAMPLES = 4
+  val INVERSE_PI = 1 / Pi
 }
 
+// Single precision floating point
 class PepeFloat extends Bundle {
-  val foo = UInt(32.W)
-}
 
-case class FloatingType(exponent: Int, significand: Int) {
+  def signBits = 1
+  def exponentBits = 8
+  def significandBits = 23
+  def bits = signBits + exponentBits + significandBits
 
-  def recode(x: UInt) = hardfloat.recFNFromFN(exponent, significand, x)
+  val sign = Bool()
+  val exponent = UInt(exponentBits.W)
+  val significand = UInt(significandBits.W)
+
+  val i2f = Module(new hardfloat.INToRecFN(bits, exponentBits, significandBits))
+
+  def recode(x: UInt) = hardfloat.recFNFromFN(exponentBits, significandBits, x)
 }
 
 class Vector3 extends Bundle {
@@ -23,7 +33,7 @@ class Vector3 extends Bundle {
 }
 
 class Ratio extends Bundle {
-  val r = new PepeFloat
+  val spectrum = new SampledSpectrum
 }
 
 class SampledSpectrum extends Bundle {
@@ -49,7 +59,8 @@ class Diffuse extends Module {
   reflectance.ready := true.B
   directions.ready := true.B
 
-  output.bits.ratio.r.foo := 1.U
+  output.bits.ratio.spectrum := reflectance.bits // TODO * CONSTANTS.INVERSE_PI
+  // Also testing fails now!
   output.valid := true.B
 }
 
