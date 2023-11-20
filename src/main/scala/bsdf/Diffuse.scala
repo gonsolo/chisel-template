@@ -6,7 +6,7 @@ import chisel3.util.Decoupled
 
 object CONSTANTS {
   val NUMBER_SPECTRUM_SAMPLES = 4
-  val INVERSE_PI: Float = 1.0.toFloat / Pi.toFloat
+  //val INVERSE_PI: Float = 1.0.toFloat / Pi.toFloat
 }
 
 
@@ -36,30 +36,46 @@ class Vector3 extends Bundle {
   val z = new PepeFloat
 }
 
-class Ratio extends Bundle {
-  val spectrum = new SampledSpectrum
-}
-
 class SampledSpectrum extends Bundle {
   val values = Vec(CONSTANTS.NUMBER_SPECTRUM_SAMPLES, new PepeFloat)
 }
 
-class DiffuseInputBundle extends Bundle {
+class BsdfInputBundle extends Bundle {
   val outDirection = new Vector3
   val inDirection = new Vector3
 }
 
-class DiffuseOutputBundle extends Bundle {
-  val ratio = new Ratio
+class BsdfOutputBundle extends Bundle {
+  val ratio = new SampledSpectrum
 }
 
 class MultiplyPipe() extends Module {
+  val io = IO(new Bundle {
+    val a = Input(Bits((8 + 23).W))
+    val b = Input(Bits((8 + 23).W))
+    val out = Output(Bits((8 + 23 + 1).W))
+  })
+  val mul = Module(new hardfloat.MulRecFN(8, 23))
+  mul.io.a := hardfloat.recFNFromFN(8, 23, io.a)
+  mul.io.b := hardfloat.recFNFromFN(8, 23, io.b)
+  mul.io.roundingMode := 0.U // nearEven
+  mul.io.detectTininess := 0.U // tininess before
+  mul.io.out := mul.io.out
+  val exceptionFlags = mul.io.exceptionFlags
+}
+
+class MultiplySpectrum extends Module {
   val io = new Bundle {
     val a = new SampledSpectrum
     val b = new SampledSpectrum
-    val result = new SampledSpectrum
+    val out = new SampledSpectrum
   }
-  // TODO
+  io.a.values.lazyZip(io.b.values).lazyZip(io.out.values).toList foreach { case (a, b, out) =>
+    val mul = new MultiplyPipe()
+    mul.io.a := a
+    mul.io.b := b
+    out := mul.io.out
+  }
 }
 
 object InversePi {
@@ -102,20 +118,23 @@ object InversePi {
   }
 }
 
-class Diffuse extends Module {
+trait Bsdf {
+  val directions = IO(Flipped(Decoupled(new BsdfInputBundle)))
+  val output = IO(Decoupled(new BsdfOutputBundle))
+}
+
+class Diffuse extends Module with Bsdf {
   val reflectance = IO(Flipped(Decoupled(new SampledSpectrum)))
-  val directions = IO(Flipped(Decoupled(new DiffuseInputBundle)))
-  val output = IO(Decoupled(new DiffuseOutputBundle))
 
   reflectance.ready := true.B
   directions.ready := true.B
 
   val inversePi = InversePi.create()
 
-  val multiply = Module(new MultiplyPipe())
+  val multiply = Module(new MultiplySpectrum())
   multiply.io.a := reflectance.bits
   multiply.io.b := inversePi
-  output.bits.ratio.spectrum := multiply.io.result
+  output.bits.ratio := multiply.io.out
   // Also testing fails now!
 
   output.valid := true.B
