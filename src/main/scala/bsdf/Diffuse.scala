@@ -6,25 +6,29 @@ import chisel3.util.Decoupled
 
 object CONSTANTS {
   val NUMBER_SPECTRUM_SAMPLES = 4
-  val INVERSE_PI = 1 / Pi
+  val INVERSE_PI: Float = 1.0.toFloat / Pi.toFloat
 }
+
 
 // Single precision floating point
 class PepeFloat extends Bundle {
 
   def signBits = 1
-  def exponentBits = 8
   def significandBits = 23
+  def exponentBits = 8
   def bits = signBits + exponentBits + significandBits
 
   val sign = Bool()
-  val exponent = UInt(exponentBits.W)
   val significand = UInt(significandBits.W)
+  val exponent = UInt(exponentBits.W)
 
+  // TEST
   val i2f = Module(new hardfloat.INToRecFN(bits, exponentBits, significandBits))
 
+  // TEST
   def recode(x: UInt) = hardfloat.recFNFromFN(exponentBits, significandBits, x)
 }
+
 
 class Vector3 extends Bundle {
   val x = new PepeFloat
@@ -49,18 +53,71 @@ class DiffuseOutputBundle extends Bundle {
   val ratio = new Ratio
 }
 
+class MultiplyPipe() extends Module {
+  val io = new Bundle {
+    val a = new SampledSpectrum
+    val b = new SampledSpectrum
+    val result = new SampledSpectrum
+  }
+  // TODO
+}
+
+object InversePi {
+  def create() : PepeFloat = {
+    val inversePi = new PepeFloat
+    inversePi.sign := false.B
+    inversePi.significand(0) := 0.U
+    inversePi.significand(0) := 1.U
+    inversePi.significand(0) := 1.U
+    inversePi.significand(0) := 1.U
+    inversePi.significand(0) := 1.U
+    inversePi.significand(0) := 1.U
+    inversePi.significand(0) := 0.U
+    inversePi.significand(0) := 1.U
+    inversePi.significand(0) := 0.U
+    inversePi.significand(0) := 1.U
+    inversePi.significand(0) := 0.U
+    inversePi.significand(0) := 0.U
+    inversePi.significand(0) := 0.U
+    inversePi.significand(0) := 1.U
+    inversePi.significand(0) := 0.U
+    inversePi.significand(0) := 1.U
+    inversePi.significand(0) := 1.U
+    inversePi.significand(0) := 1.U
+    inversePi.significand(0) := 1.U
+    inversePi.significand(0) := 1.U
+    inversePi.significand(0) := 0.U
+    inversePi.significand(0) := 0.U
+    inversePi.significand(0) := 1.U
+    inversePi.exponent(0) := 1.U
+    inversePi.exponent(0) := 0.U
+    inversePi.exponent(0) := 0.U
+    inversePi.exponent(0) := 0.U
+    inversePi.exponent(0) := 0.U
+    inversePi.exponent(0) := 0.U
+    inversePi.exponent(0) := 1.U
+    inversePi.exponent(0) := 1.U
+    // 32 bit inv pi: sign sig exp 0 01111101010001011111001 10000011
+    inversePi
+  }
+}
+
 class Diffuse extends Module {
   val reflectance = IO(Flipped(Decoupled(new SampledSpectrum)))
   val directions = IO(Flipped(Decoupled(new DiffuseInputBundle)))
   val output = IO(Decoupled(new DiffuseOutputBundle))
 
-  // TODO
-
   reflectance.ready := true.B
   directions.ready := true.B
 
-  output.bits.ratio.spectrum := reflectance.bits // TODO * CONSTANTS.INVERSE_PI
+  val inversePi = InversePi.create()
+
+  val multiply = Module(new MultiplyPipe())
+  multiply.io.a := reflectance.bits
+  multiply.io.b := inversePi
+  output.bits.ratio.spectrum := multiply.io.result
   // Also testing fails now!
+
   output.valid := true.B
 }
 
