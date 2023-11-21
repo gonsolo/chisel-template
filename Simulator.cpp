@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
         //rootp->io_float_input_value = bit_cast<uint32_t>(f);
         //rootp->io_input = 41;
 
-	cout << "Value before simulation: " << (int)rootp->output_bits_ratio_r_foo << endl;
+	//cout << "Value before simulation: " << (int)rootp->output_bits_ratio_r_foo << endl;
 
         for (uint64_t main_time  = 0; main_time < 5; main_time++) {
                 if (main_time == 0) {
@@ -32,7 +32,7 @@ int main(int argc, char** argv) {
                 }
                 diffuse.clock = main_time;
                 diffuse.eval();
-		cout << "Time: " << main_time << " value: " << rootp->output_bits_ratio_r_foo << endl;
+		//cout << "Time: " << main_time << " value: " << rootp->output_bits_ratio_r_foo << endl;
         }
 
         //float floatOutput = bit_cast<float>(rootp->io_float_output_value);

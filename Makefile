@@ -8,7 +8,7 @@ run: obj_dir/VDiffuse
 obj_dir/VDiffuse: Diffuse.v Simulator.cpp
 	@verilator --build --cc --exe $^
 Diffuse.v: src/main/scala/bsdf/Diffuse.scala
-	@sbt "runMain bsdf.Diffuse"
+	sbt "runMain bsdf.Diffuse"
 t: test
 test:
 	sbt test
