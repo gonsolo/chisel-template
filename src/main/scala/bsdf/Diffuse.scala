@@ -12,43 +12,55 @@ object CONSTANTS {
   def WIDTH = (EXPONENT_BITS + SIGNIFICAND_BITS + 1).W
 }
 
+//class Diffuse extends Module {
+//
+//  val io = IO(
+//    new Bundle {
+//      val a = Input(Bits(CONSTANTS.WIDTH))
+//      val b = Input(Bits(CONSTANTS.WIDTH))
+//      val out = Output(Bits(CONSTANTS.WIDTH))
+//    }
+//  )
+//
+//  val mul = Module(new Multiply())
+//  mul.io.a := io.a
+//  mul.io.b := io.b
+//  io.out := mul.io.out
+//}
+
+//class Multiply extends Module {
 class Diffuse extends Module {
 
   val io = IO(
     new Bundle {
       val a = Input(Bits(CONSTANTS.WIDTH))
-      val b = Input(Bits(CONSTANTS.WIDTH))
+      //val b = Input(Bits(CONSTANTS.WIDTH))
       val out = Output(Bits(CONSTANTS.WIDTH))
+      //val exceptionFlags = Output(Bits(5.W))
     }
   )
 
-  val mul = Module(new Multiply())
-  mul.io.a := io.a
-  mul.io.b := io.b
-  io.out := mul.io.out
-}
+  //val mul = Module(new hardfloat.MulRecFN(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS))
+  //mul.io.a := recode(io.a)
+  //mul.io.b := recode(io.b)
+  //mul.io.roundingMode := 0.U
+  //mul.io.detectTininess := 0.U
+  ////io.out := decode(mul.io.out)
+  //io.out := mul.io.out
+  //io.exceptionFlags := mul.io.exceptionFlags
 
-class Multiply extends Module {
 
-  val io = IO(
-    new Bundle {
-      val a = Input(Bits(CONSTANTS.WIDTH))
-      val b = Input(Bits(CONSTANTS.WIDTH))
-      val out = Output(Bits(CONSTANTS.WIDTH))
-      val exceptionFlags = Output(Bits(5.W))
-    }
-  )
+  //io.out := fNFromRecFN(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS, tmp)
 
-  val mul = Module(new hardfloat.MulRecFN(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS))
-  mul.io.a := recode(io.a)
-  mul.io.b := recode(io.b)
-  mul.io.roundingMode := 0.U
-  mul.io.detectTininess := 0.U
-  io.out := decode(mul.io.out)
-  io.exceptionFlags := mul.io.exceptionFlags
+  //io.out := recFNFromFN(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS, io.a)
 
-  def recode(x: UInt) = hardfloat.recFNFromFN(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS, x)
-  def decode(x: UInt) = hardfloat.fNFromRecFN(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS, x)
+  val bla = RegInit(0.U(CONSTANTS.WIDTH))
+  bla := recFNFromFN(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS, io.a)
+  io.out := fNFromRecFN(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS, bla)
+  //io.out := tmp2
+
+  //def recode(x: UInt) = hardfloat.recFNFromFN(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS, x)
+  //def decode(x: UInt) = hardfloat.fNFromRecFN(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS, x)
 }
 
 import circt.stage.ChiselStage
