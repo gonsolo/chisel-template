@@ -3,6 +3,7 @@ package bsdf
 import scala.math.Pi
 import chisel3._
 import chisel3.util.Decoupled
+import hardfloat._
 
 object CONSTANTS {
   def EXPONENT_BITS = 8
@@ -165,13 +166,11 @@ class MultiplyPipe extends Module {
     }
   )
 
-  //val mul = Module(new hardfloat.MulRecFN(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS))
-  //mul.io.a := hardfloat.recFNFromFN(CONSTANTS.EXPONENT_WIDTH, CONSTANTS.SIGNIFICAND_WIDTH, io.a)
-  //mul.io.a := recode(io.a)
-  //mul.io.b := recode(io.b)
-  //mul.io.b := recFNFromFN(expWidth, sigWidth, io.b)
-  //mul.io.roundingMode   := io.roundingMode
-  //mul.io.detectTininess := io.detectTininess
+  val mul = Module(new hardfloat.MulRecFN(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS))
+  mul.io.a := recode(io.a)
+  mul.io.b := recode(io.b)
+  mul.io.roundingMode := 0.U
+  mul.io.detectTininess := 0.U
 
   def recode(x: UInt) = hardfloat.recFNFromFN(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS, x)
 }
