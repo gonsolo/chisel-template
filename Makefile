@@ -1,19 +1,22 @@
-all: compile test run
+all: compile test simulate
 
-.PHONY: r run test compile c clean t test
+.PHONY: c clean compile s simulate t test
 
-r: run
-run: obj_dir/VDiffuse 
+s: simulate
+simulate: obj_dir/VDiffuse
+	@echo "** Simulating"
 	@./obj_dir/VDiffuse
 obj_dir/VDiffuse: Diffuse.v Simulator.cpp
 	@verilator -CFLAGS -std=c++20 --build --cc --exe $^
 Diffuse.v: src/main/scala/bsdf/Diffuse.scala
-	sbt run
+	@sbt run
 t: test
 test:
-	sbt test
+	@echo "** Testing"
+	@sbt test
 compile:
-	sbt compile
+	@echo "** Compiling"
+	@sbt compile
 c: clean
 clean:
-	rm -rf Diffuse.v obj_dir *.json target test_run_dir
+	@rm -rf Diffuse.v obj_dir *.json target test_run_dir
