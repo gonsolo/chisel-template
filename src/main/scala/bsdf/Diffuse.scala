@@ -36,11 +36,11 @@ class Diffuse extends Module {
   //io.out := recFNFromFN(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS, io.a)
 
   val aRecoded = RegInit(0.U(CONSTANTS.WIDTH))
-  aRecoded := recFNFromFN(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS, io.a)
-  io.out := fNFromRecFN(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS, aRecoded)
+  aRecoded := recode(io.a)
+  io.out := decode(aRecoded)
 
-  //def recode(x: UInt) = hardfloat.recFNFromFN(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS, x)
-  //def decode(x: UInt) = hardfloat.fNFromRecFN(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS, x)
+  def recode(x: UInt) = recFNFromFN(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS, x)
+  def decode(x: UInt) = fNFromRecFN(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS, x)
 }
 
 import circt.stage.ChiselStage
