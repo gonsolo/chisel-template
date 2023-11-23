@@ -12,23 +12,6 @@ object CONSTANTS {
   def WIDTH = (EXPONENT_BITS + SIGNIFICAND_BITS + 1).W
 }
 
-//class Diffuse extends Module {
-//
-//  val io = IO(
-//    new Bundle {
-//      val a = Input(Bits(CONSTANTS.WIDTH))
-//      val b = Input(Bits(CONSTANTS.WIDTH))
-//      val out = Output(Bits(CONSTANTS.WIDTH))
-//    }
-//  )
-//
-//  val mul = Module(new Multiply())
-//  mul.io.a := io.a
-//  mul.io.b := io.b
-//  io.out := mul.io.out
-//}
-
-//class Multiply extends Module {
 class Diffuse extends Module {
 
   val io = IO(
@@ -49,15 +32,12 @@ class Diffuse extends Module {
   //io.out := mul.io.out
   //io.exceptionFlags := mul.io.exceptionFlags
 
-
   //io.out := fNFromRecFN(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS, tmp)
-
   //io.out := recFNFromFN(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS, io.a)
 
-  val bla = RegInit(0.U(CONSTANTS.WIDTH))
-  bla := recFNFromFN(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS, io.a)
-  io.out := fNFromRecFN(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS, bla)
-  //io.out := tmp2
+  val aRecoded = RegInit(0.U(CONSTANTS.WIDTH))
+  aRecoded := recFNFromFN(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS, io.a)
+  io.out := fNFromRecFN(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS, aRecoded)
 
   //def recode(x: UInt) = hardfloat.recFNFromFN(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS, x)
   //def decode(x: UInt) = hardfloat.fNFromRecFN(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS, x)

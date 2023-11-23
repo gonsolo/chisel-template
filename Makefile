@@ -1,4 +1,4 @@
-all: compile
+all: compile test run
 
 .PHONY: r run test compile c clean t test
 
@@ -6,9 +6,9 @@ r: run
 run: obj_dir/VDiffuse 
 	@./obj_dir/VDiffuse
 obj_dir/VDiffuse: Diffuse.v Simulator.cpp
-	@verilator --build --cc --exe $^
+	@verilator -CFLAGS -std=c++20 --build --cc --exe $^
 Diffuse.v: src/main/scala/bsdf/Diffuse.scala
-	sbt "runMain bsdf.Diffuse"
+	sbt run
 t: test
 test:
 	sbt test

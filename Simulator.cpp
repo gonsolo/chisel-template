@@ -6,25 +6,24 @@
 #include "obj_dir/VDiffuse.h"
 #include "obj_dir/VDiffuse___024root.h"
 
-int main(int argc, char** argv) {
-        using namespace std;
+using namespace std;
 
+void check(bool condition, string_view message) {
+	if (!condition) {
+		cout << "Error: condition \"" << message << "\" not met!" << endl;
+		exit(EXIT_FAILURE);
+	}
+}
+
+int main(int argc, char** argv) {
         Verilated::commandArgs(argc, argv);
 	VDiffuse diffuse;
-
-	std::cout << "Starting simulation." << std::endl;
-
         diffuse.reset = 0;
         auto rootp = diffuse.rootp;
-        
-        //float f = 0.3f;
-        //cout << "Float input: " << f << endl;
-        //rootp->io_float_input_value = bit_cast<uint32_t>(f);
-        //rootp->io_input = 41;
-
-	//cout << "Value before simulation: " << (int)rootp->output_bits_ratio_r_foo << endl;
-
-        for (uint64_t main_time  = 0; main_time < 5; main_time++) {
+        float a = 66.6f;
+        rootp->io_a = bit_cast<uint32_t>(a);
+	auto steps = 4;
+        for (uint64_t main_time  = 0; main_time < steps; main_time++) {
                 if (main_time == 0) {
                         diffuse.reset = 1;
                 } else {
@@ -32,26 +31,11 @@ int main(int argc, char** argv) {
                 }
                 diffuse.clock = main_time;
                 diffuse.eval();
-		//cout << "Time: " << main_time << " value: " << rootp->output_bits_ratio_r_foo << endl;
         }
-
-        //float floatOutput = bit_cast<float>(rootp->io_float_output_value);
-        //cout << "Float output: " << floatOutput << endl;
-#if 0
-        ofstream image("image.ppm");
-        image << "P3" << endl;
-        image << "2 1" << endl;
-        image << "255" << endl;
-        for (int address = 0; address < 2; ++address) {
-                //int red = rootp->Testbench__DOT__colorMemory_red[address];
-                //int green = rootp->Testbench__DOT__colorMemory_green[address];
-                //int blue = rootp->Testbench__DOT__colorMemory_blue[address];
-                //image << red << " " << green << " " << blue << endl;
-        }
-        image.close();
-#endif    
-        //testbench.final();
-	std::cout << "Finished simulation." << std::endl;
+        float out = bit_cast<float>(rootp->io_out);
+	check(out == a, "out == a");
+        diffuse.final();
+	cout << "Ok." << endl;
 }
 
 

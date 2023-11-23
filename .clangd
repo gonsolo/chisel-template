@@ -1,3 +1,2 @@
-CompileFlags: # Tweak the parse settings
-  Add: [-xc++, -I/usr/share/verilator/include]
-
+CompileFlags:
+  Add: [-std=c++20, -I/usr/share/verilator/include]
