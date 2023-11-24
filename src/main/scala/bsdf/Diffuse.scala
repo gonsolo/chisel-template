@@ -27,23 +27,21 @@ class Diffuse extends Module {
 
   val mul = Module(new MulRecFN(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS))
 
-  val reg1 = RegInit(0.U(CONSTANTS.WIDTH))
-  val reg2 = RegInit(0.U(CONSTANTS.WIDTH))
-  val reg3 = RegInit(0.U(CONSTANTS.WIDTH))
+  val aRecoded = RegInit(0.U(CONSTANTS.WIDTH))
+  val mulRecoded = RegInit(0.U(CONSTANTS.WIDTH))
+  val mulDecoded = RegInit(0.U(CONSTANTS.WIDTH))
 
-  reg1 := recode(io.a)
-  //val pipe1 = Pipe(true.B, reg1, 2)
+  aRecoded := recode(io.a)
 
-  mul.io.a := reg1
-  mul.io.b := reg1
+  mul.io.a := aRecoded
+  mul.io.b := aRecoded
   mul.io.roundingMode := io.roundingMode
   mul.io.detectTininess := io.detectTininess
 
-  reg2 := mul.io.out
-  reg3 := decode(reg2)
+  mulRecoded := mul.io.out
+  mulDecoded := decode(mulRecoded)
 
-  io.out := reg3
-  //io.out := io.a
+  io.out := mulDecoded
 
   io.exceptionFlags := mul.io.exceptionFlags
 
