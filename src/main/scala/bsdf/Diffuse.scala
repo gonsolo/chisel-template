@@ -12,18 +12,18 @@ object CONSTANTS {
   def WIDTH = (EXPONENT_BITS + SIGNIFICAND_BITS + 1).W
 }
 
-class Diffuse extends Module {
-
-  val io = IO(
-    new Bundle {
+class MultiplyBundle extends Bundle {
       val a = Input(Bits(CONSTANTS.WIDTH))
       val b = Input(Bits(CONSTANTS.WIDTH))
       val roundingMode   = Input(UInt(3.W))
       val detectTininess = Input(UInt(1.W))
       val out = Output(Bits(CONSTANTS.WIDTH))
       val exceptionFlags = Output(Bits(5.W))
-    }
-  )
+}
+
+class Multiply extends Module {
+
+  val io = IO(new MultiplyBundle)
 
   val mul = Module(new MulRecFN(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS))
 
@@ -51,6 +51,16 @@ class Diffuse extends Module {
 
   def decode(x: UInt) = fNFromRecFN(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS, x)
 }
+
+class Diffuse extends Module {
+
+  val io = IO(new MultiplyBundle)
+
+  val multiply = Module(new Multiply())
+
+  multiply.io <> io
+}
+
 
 import circt.stage.ChiselStage
 import java.io.PrintWriter
