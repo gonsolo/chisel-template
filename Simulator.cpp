@@ -33,7 +33,7 @@ int main(int argc, char** argv) {
                 diffuse.eval();
         }
         float out = bit_cast<float>((uint32_t)rootp->io_out);
-	cout << "a: " << a << ", out: " << out << endl;
+	//cout << "a: " << a << ", out: " << out << endl;
 	check(out == a * a, "out == a * a");
         diffuse.final();
 	cout << "Ok." << endl;
