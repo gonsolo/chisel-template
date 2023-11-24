@@ -20,7 +20,7 @@ int main(int argc, char** argv) {
 	VDiffuse diffuse;
         diffuse.reset = 0;
         auto rootp = diffuse.rootp;
-        float a = 66.6f;
+        float a = 3.0f;
         rootp->io_a = bit_cast<uint32_t>(a);
 	auto steps = 4;
         for (uint64_t main_time  = 0; main_time < steps; main_time++) {
@@ -32,8 +32,9 @@ int main(int argc, char** argv) {
                 diffuse.clock = main_time;
                 diffuse.eval();
         }
-        float out = bit_cast<float>(rootp->io_out);
-	check(out == a, "out == a");
+        float out = bit_cast<float>((uint32_t)rootp->io_out);
+	cout << "a: " << a << ", out: " << out << endl;
+	check(out == a * a, "out == a * a");
         diffuse.final();
 	cout << "Ok." << endl;
 }

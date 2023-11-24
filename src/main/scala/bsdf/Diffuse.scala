@@ -2,12 +2,12 @@ package bsdf
 
 import scala.math.Pi
 import chisel3._
-import chisel3.util.Decoupled
+import chisel3.util.Pipe
 import hardfloat._
 
 object CONSTANTS {
   def EXPONENT_BITS = 8
-  def SIGNIFICAND_BITS = 23
+  def SIGNIFICAND_BITS = 24
   def EXP_SIG_WIDTH = (EXPONENT_BITS + SIGNIFICAND_BITS).W
   def WIDTH = (EXPONENT_BITS + SIGNIFICAND_BITS + 1).W
 }
@@ -17,29 +17,38 @@ class Diffuse extends Module {
   val io = IO(
     new Bundle {
       val a = Input(Bits(CONSTANTS.WIDTH))
-      //val b = Input(Bits(CONSTANTS.WIDTH))
+      val b = Input(Bits(CONSTANTS.WIDTH))
+      val roundingMode   = Input(UInt(3.W))
+      val detectTininess = Input(UInt(1.W))
       val out = Output(Bits(CONSTANTS.WIDTH))
-      //val exceptionFlags = Output(Bits(5.W))
+      val exceptionFlags = Output(Bits(5.W))
     }
   )
 
-  //val mul = Module(new hardfloat.MulRecFN(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS))
-  //mul.io.a := recode(io.a)
-  //mul.io.b := recode(io.b)
-  //mul.io.roundingMode := 0.U
-  //mul.io.detectTininess := 0.U
-  ////io.out := decode(mul.io.out)
-  //io.out := mul.io.out
-  //io.exceptionFlags := mul.io.exceptionFlags
+  val mul = Module(new MulRecFN(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS))
 
-  //io.out := fNFromRecFN(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS, tmp)
-  //io.out := recFNFromFN(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS, io.a)
+  val reg1 = RegInit(0.U(CONSTANTS.WIDTH))
+  val reg2 = RegInit(0.U(CONSTANTS.WIDTH))
+  val reg3 = RegInit(0.U(CONSTANTS.WIDTH))
 
-  val aRecoded = RegInit(0.U(CONSTANTS.WIDTH))
-  aRecoded := recode(io.a)
-  io.out := decode(aRecoded)
+  reg1 := recode(io.a)
+  //val pipe1 = Pipe(true.B, reg1, 2)
+
+  mul.io.a := reg1
+  mul.io.b := reg1
+  mul.io.roundingMode := io.roundingMode
+  mul.io.detectTininess := io.detectTininess
+
+  reg2 := mul.io.out
+  reg3 := decode(reg2)
+
+  io.out := reg3
+  //io.out := io.a
+
+  io.exceptionFlags := mul.io.exceptionFlags
 
   def recode(x: UInt) = recFNFromFN(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS, x)
+
   def decode(x: UInt) = fNFromRecFN(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS, x)
 }
 
