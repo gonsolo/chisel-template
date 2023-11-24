@@ -5,32 +5,27 @@ import chisel3._
 import chisel3.util.Pipe
 import hardfloat._
 
-object CONSTANTS {
-  def EXPONENT_BITS = 8
-  def SIGNIFICAND_BITS = 24
-  def EXP_SIG_WIDTH = (EXPONENT_BITS + SIGNIFICAND_BITS).W
-  def WIDTH = (EXPONENT_BITS + SIGNIFICAND_BITS + 1).W
-}
-
-class MultiplyBundle extends Bundle {
-      val a = Input(Bits(CONSTANTS.WIDTH))
-      val b = Input(Bits(CONSTANTS.WIDTH))
+class MultiplyBundle(width: Int) extends Bundle {
+      val a = Input(Bits(width.W))
+      val b = Input(Bits(width.W))
       val roundingMode   = Input(UInt(3.W))
       val detectTininess = Input(UInt(1.W))
-      val out = Output(Bits(CONSTANTS.WIDTH))
+      val out = Output(Bits(width.W))
       val exceptionFlags = Output(Bits(5.W))
 }
 
-class Multiply extends Module {
+class Multiply(exp: Int, sig: Int)  extends Module {
 
-  val io = IO(new MultiplyBundle)
+  val bits = exp + sig + 1
 
-  val mul = Module(new MulRecFN(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS))
+  val io = IO(new MultiplyBundle(bits))
 
-  val aRecoded = RegInit(0.U(CONSTANTS.WIDTH))
-  val bRecoded = RegInit(0.U(CONSTANTS.WIDTH))
-  val mulRecoded = RegInit(0.U(CONSTANTS.WIDTH))
-  val mulDecoded = RegInit(0.U(CONSTANTS.WIDTH))
+  val mul = Module(new MulRecFN(exp, sig))
+
+  val aRecoded = RegInit(0.U(bits.W))
+  val bRecoded = RegInit(0.U(bits.W))
+  val mulRecoded = RegInit(0.U(bits.W))
+  val mulDecoded = RegInit(0.U(bits.W))
 
   aRecoded := recode(io.a)
   bRecoded := recode(io.b)
@@ -39,25 +34,26 @@ class Multiply extends Module {
   mul.io.b := bRecoded
   mul.io.roundingMode := io.roundingMode
   mul.io.detectTininess := io.detectTininess
-
   mulRecoded := mul.io.out
+
   mulDecoded := decode(mulRecoded)
-
   io.out := mulDecoded
-
   io.exceptionFlags := mul.io.exceptionFlags
 
-  def recode(x: UInt) = recFNFromFN(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS, x)
+  def recode(x: UInt) = recFNFromFN(exp, sig, x)
+  def decode(x: UInt) = fNFromRecFN(exp, sig, x)
+}
 
-  def decode(x: UInt) = fNFromRecFN(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS, x)
+object CONSTANTS {
+  def EXPONENT_BITS = 8
+  def SIGNIFICAND_BITS = 24
+  def SIGN_BITS = 1
+  def BITS = EXPONENT_BITS + SIGNIFICAND_BITS + SIGN_BITS
 }
 
 class Diffuse extends Module {
-
-  val io = IO(new MultiplyBundle)
-
-  val multiply = Module(new Multiply())
-
+  val io = IO(new MultiplyBundle(CONSTANTS.BITS))
+  val multiply = Module(new Multiply(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS))
   multiply.io <> io
 }
 
