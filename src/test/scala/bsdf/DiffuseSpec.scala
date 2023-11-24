@@ -7,9 +7,11 @@ import java.lang.Float.floatToIntBits
 
 class DiffuseSpec extends AnyFreeSpec with ChiselScalatestTester {
 
-  val a = floatToIntBits(3.0f).U
-  val b = a
-  val expected = floatToIntBits(9.0f).U
+  val aFloat = 33.2f
+  val bFloat = 2.7f
+  val a = floatToIntBits(aFloat).U
+  val b = floatToIntBits(bFloat).U
+  val expected = floatToIntBits(aFloat * bFloat).U
   val zero = 0.U
 
   def print(value: BigInt, expected: chisel3.UInt) = {
@@ -17,7 +19,7 @@ class DiffuseSpec extends AnyFreeSpec with ChiselScalatestTester {
       println("expected: " + expected)
   }
 
-  "Diffuse should encode/decode correctly" in {
+  "Diffuse should multiply correctly" in {
     test(new Diffuse) { diffuse =>
       diffuse.io.a.poke(a)
       diffuse.io.b.poke(b)

@@ -28,13 +28,15 @@ class Diffuse extends Module {
   val mul = Module(new MulRecFN(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS))
 
   val aRecoded = RegInit(0.U(CONSTANTS.WIDTH))
+  val bRecoded = RegInit(0.U(CONSTANTS.WIDTH))
   val mulRecoded = RegInit(0.U(CONSTANTS.WIDTH))
   val mulDecoded = RegInit(0.U(CONSTANTS.WIDTH))
 
   aRecoded := recode(io.a)
+  bRecoded := recode(io.b)
 
   mul.io.a := aRecoded
-  mul.io.b := aRecoded
+  mul.io.b := bRecoded
   mul.io.roundingMode := io.roundingMode
   mul.io.detectTininess := io.detectTininess
 
