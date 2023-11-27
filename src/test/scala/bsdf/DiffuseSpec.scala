@@ -12,7 +12,7 @@ class DiffuseSpec extends AnyFreeSpec with ChiselScalatestTester {
       println("expected: " + expected)
   }
 
-  def test_multiply(diffuse: bsdf.Diffuse, a: Float, b: Float) = {
+  def test_multiply(diffuse: bsdf.Multiply, a: Float, b: Float) = {
     val aBits = floatToIntBits(a).S
     val bBits = floatToIntBits(b).S
     val expected = floatToIntBits(a * b)
@@ -31,12 +31,14 @@ class DiffuseSpec extends AnyFreeSpec with ChiselScalatestTester {
     diffuse.io.out.expect(expected)
   }
 
-  "Diffuse should multiply correctly" in {
-    test(new Diffuse()) { diffuse =>
-      test_multiply(diffuse, 33.2f, 2.7f);
-      test_multiply(diffuse, 1.0f, 2.0f);
-      test_multiply(diffuse, 0.0f, 3.3f);
-      test_multiply(diffuse, -33.2f, 2.7f);
+  "Multiply should multiply correctly" in {
+    test(new Multiply(8, 24)) { m =>
+      test_multiply(m, 33.2f, 2.7f);
+      test_multiply(m, 1.0f, 2.0f);
+      test_multiply(m, 0.0f, 3.3f);
+      test_multiply(m, -33.2f, 2.7f);
     }
   }
+
+  // TODO: Diffuse
 }
