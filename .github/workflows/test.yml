@@ -19,5 +19,5 @@ jobs:
         run: |
           git clone https://github.com/gonsolo/berkeley-hardfloat.git
           cd berkeley-hardfloat; sbt publishLocal
-#      - name: SBT Test
-#        run: sbt test
+      - name: SBT Test
+        run: sbt test
