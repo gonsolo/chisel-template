@@ -48,6 +48,9 @@ int main(int argc, char** argv) {
         diffuse.reset = 0;
         auto rootp = diffuse.rootp;
 	test_multiply(diffuse, 33.2, 2.7);
+	test_multiply(diffuse, 1.0, 2.0);
+	test_multiply(diffuse, 0.0, 3.3);
+	test_multiply(diffuse, -127.3, 13.0);
         diffuse.final();
 	cout << "Ok." << endl;
 }
