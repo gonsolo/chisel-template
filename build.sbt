@@ -14,7 +14,7 @@ lazy val root = (project in file("."))
 			// This has to be locally built and published via "sbt publishLocal"
 			// from the berkeley-hardfloat repository
 			// https://github.com/ucb-bar/berkeley-hardfloat
-			"edu.berkeley.cs" %% "hardfloat" % "1.5-SNAPSHOT"
+			"edu.berkeley.cs" %% "hardfloat" % "1.5-GONSOLO-SNAPSHOT"
 		),
 		scalacOptions ++= Seq(
 			"-language:reflectiveCalls",

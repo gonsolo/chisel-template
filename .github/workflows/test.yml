@@ -18,6 +18,7 @@ jobs:
       - name: Install hardfloat
         run: |
           git clone https://github.com/gonsolo/berkeley-hardfloat.git
+          git switch gonsolo
           cd berkeley-hardfloat; sbt publishLocal
       - name: SBT Test
         run: sbt test
