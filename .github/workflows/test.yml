@@ -16,8 +16,7 @@ jobs:
       - name: Cache Scala
         uses: coursier/cache-action@v5
       - name: Install hardfloat
-        run: \
-          sudo apt install git --yes
+        run: |
           git clone https://github.com:gonsolo/berkeley-hardfloat.git
 #      - name: SBT Test
 #        run: sbt test
