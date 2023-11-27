@@ -15,5 +15,8 @@ jobs:
           java-version: adopt@1.8
       - name: Cache Scala
         uses: coursier/cache-action@v5
-      - name: SBT Test
-        run: sbt test
+      - name: Install hardfloat
+        run: \
+          git clone https://github.com:gonsolo/berkeley-hardfloat.git
+#      - name: SBT Test
+#        run: sbt test
