@@ -17,6 +17,7 @@ jobs:
         uses: coursier/cache-action@v5
       - name: Install hardfloat
         run: \
-          git clone https://github.com:gonsolo/berkeley-hardfloat.git
+          echo $PATH
+          /usr/bin/git clone https://github.com:gonsolo/berkeley-hardfloat.git
 #      - name: SBT Test
 #        run: sbt test
