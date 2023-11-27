@@ -4,12 +4,14 @@ import chisel3._
 import chiseltest._
 import org.scalatest.freespec.AnyFreeSpec
 import java.lang.Float.floatToIntBits
+import java.lang.Float.intBitsToFloat
+import scala.math.Pi
 
 class DiffuseSpec extends AnyFreeSpec with ChiselScalatestTester {
 
-  def print(value: BigInt, expected: Int) = {
-      println("out: " + value)
-      println("expected: " + expected)
+  def print(value: Int, expected: Int) = {
+      println("out: " + intBitsToFloat(value))
+      println("expected: " + intBitsToFloat(expected))
   }
 
   def test_multiply(diffuse: bsdf.Multiply, a: Float, b: Float) = {
@@ -40,5 +42,20 @@ class DiffuseSpec extends AnyFreeSpec with ChiselScalatestTester {
     }
   }
 
-  // TODO: Diffuse
+  "Diffuse should return inv pi" in {
+    test(new Diffuse) { diffuse =>
+      val reflectance = 1.0f
+      val reflectanceBits = floatToIntBits(reflectance).S
+      val expected = floatToIntBits(reflectance * (1.0f / Pi.toFloat))
+      diffuse.reset.poke(true.B)
+      diffuse.clock.step()
+      diffuse.reset.poke(false.B)
+      diffuse.io.reflectance.poke(reflectanceBits)
+      for (i <- 0 until 3) {
+        diffuse.clock.step()
+      }
+      print(diffuse.io.out.peek().litValue.toInt, expected)
+      diffuse.io.out.expect(expected)
+    }
+  }
 }
