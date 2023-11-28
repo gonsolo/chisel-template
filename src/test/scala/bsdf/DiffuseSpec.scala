@@ -7,6 +7,9 @@ import java.lang.Float.floatToIntBits
 import java.lang.Float.intBitsToFloat
 import scala.math.Pi
 
+import chisel3.experimental.BundleLiterals._
+
+
 class DiffuseSpec extends AnyFreeSpec with ChiselScalatestTester {
 
   def print(value: Int, expected: Int) = {
@@ -44,18 +47,24 @@ class DiffuseSpec extends AnyFreeSpec with ChiselScalatestTester {
 
   "Diffuse should return inv pi" in {
     test(new Diffuse) { diffuse =>
-      val reflectance = 1.0f
-      val reflectanceBits = floatToIntBits(reflectance).S
-      val expected = floatToIntBits(reflectance * (1.0f / Pi.toFloat))
-      diffuse.reset.poke(true.B)
-      diffuse.clock.step()
-      diffuse.reset.poke(false.B)
-      diffuse.io.reflectance.poke(reflectanceBits)
-      for (i <- 0 until 3) {
-        diffuse.clock.step()
+      diffuse.input.initSource()
+      diffuse.input.setSourceClock(diffuse.clock)
+      diffuse.output.initSink()
+      diffuse.output.setSinkClock(diffuse.clock)
+
+      val testValues = for { x <- 0 to 5 } yield x.toFloat / 3.0f
+      val inputSeq = testValues.map { case x =>
+        (new DiffuseInputBundle(32)).Lit(_.reflectance -> floatToIntBits(x).S)
       }
-      print(diffuse.io.out.peek().litValue.toInt, expected)
-      diffuse.io.out.expect(expected)
+      val resultSeq = testValues.map { case x =>
+        (new DiffuseOutputBundle(32)).Lit(_.out -> floatToIntBits(x / Pi.toFloat).S)
+      }
+
+      fork {
+        diffuse.input.enqueueSeq(inputSeq)
+      }.fork {
+        diffuse.output.expectDequeueSeq(resultSeq)
+      }.join()
     }
   }
 }
