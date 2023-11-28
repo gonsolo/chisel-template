@@ -2,8 +2,6 @@ package bsdf
 
 import chisel3._
 import chisel3.util.Decoupled
-import circt.stage.ChiselStage
-import java.io.PrintWriter
 import java.lang.Float.floatToIntBits
 import scala.math.Pi
 
@@ -51,10 +49,3 @@ class Diffuse() extends Module {
   }
 }
 
-object Diffuse extends App {
-  val verilogDiffuse = ChiselStage.emitSystemVerilog(new Diffuse())
-  new PrintWriter("Diffuse.v") {
-    write(verilogDiffuse)
-    close
-  }
-}
