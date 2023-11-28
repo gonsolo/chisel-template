@@ -7,16 +7,6 @@ import java.io.PrintWriter
 import java.lang.Float.floatToIntBits
 import scala.math.Pi
 
-
-object CONSTANTS {
-  def EXPONENT_BITS = 8
-
-  // 23 bits and 1 implicit
-  def SIGNIFICAND_BITS = 24
-
-  def BITS = EXPONENT_BITS + SIGNIFICAND_BITS
-}
-
 class DiffuseInputBundle(width: Int) extends Bundle {
       val reflectance = Input(SInt(width.W))
 }
