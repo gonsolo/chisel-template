@@ -1,14 +1,19 @@
 package bsdf
 
 import chisel3._
+import circt.stage.ChiselStage
+import java.io.PrintWriter
 import java.lang.Float.floatToIntBits
 import scala.math.Pi
 
+
 object CONSTANTS {
   def EXPONENT_BITS = 8
+
+  // 23 bits and 1 implicit
   def SIGNIFICAND_BITS = 24
-  def SIGN_BITS = 1
-  def BITS = EXPONENT_BITS + SIGNIFICAND_BITS + SIGN_BITS
+
+  def BITS = EXPONENT_BITS + SIGNIFICAND_BITS
 }
 
 class DiffuseBundle(width: Int) extends Bundle {
@@ -29,18 +34,10 @@ class Diffuse() extends Module {
   io.out := multiply.io.out
 }
 
-import circt.stage.ChiselStage
-import java.io.PrintWriter
-
 object Diffuse extends App {
   val verilogDiffuse = ChiselStage.emitSystemVerilog(new Diffuse())
   new PrintWriter("Diffuse.v") {
     write(verilogDiffuse)
     close
   }
-  //val verilogMultiply = ChiselStage.emitSystemVerilog(new Multiply(8, 24))
-  //new PrintWriter("Multiply.v") {
-  //  write(verilogMultiply)
-  //  close
-  //}
 }
