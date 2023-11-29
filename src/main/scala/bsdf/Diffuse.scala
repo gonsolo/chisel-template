@@ -33,13 +33,15 @@ class Diffuse() extends Module {
   multiply.io.detectTininess := 0.U
 
   when(busy) {
-    output.bits.out := multiply.io.out
+    //output.bits.out := multiply.io.out
+    output.bits.out := 666.S
     resultValid := true.B
     when(output.ready && resultValid) {
       busy := false.B
       resultValid := false.B
     }
   }.otherwise {
+    output.bits.out := 666.S
     when(input.valid) {
       val bundle = input.deq()
       reflectance := bundle.reflectance
