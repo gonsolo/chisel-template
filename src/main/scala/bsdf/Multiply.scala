@@ -17,7 +17,7 @@ class Multiply(exp: Int, sig: Int)  extends Module {
   def recode(x: Bits) = recFNFromFN(exp, sig, x)
   def decode(x: Bits) = fNFromRecFN(exp, sig, x)
 
-  val bits = exp + sig + 1
+  val bits = exp + sig
   val io = IO(new MultiplyBundle(bits))
 
   val mul = Module(new MulRecFN(exp, sig))
