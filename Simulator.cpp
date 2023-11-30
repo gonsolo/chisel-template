@@ -71,6 +71,7 @@ void simulateDiffuse() {
         diffuse.reset = 0;
 	test_diffuse(diffuse, 1.0);
 	test_diffuse(diffuse, 0.5);
+	test_diffuse(diffuse, -13.0);
         diffuse.final();
 	cout << "Ok." << endl;
 
