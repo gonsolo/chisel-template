@@ -27,8 +27,10 @@ class Diffuse() extends Module {
   output.valid := resultValid
   output.bits := DontCare
 
-  multiply.io.a := DontCare
-  multiply.io.b.values(0) := invPi
+  for (i <- 0 until CONSTANTS.SPECTRUM_SAMPLES) {
+    multiply.io.a.values(i) := DontCare
+    multiply.io.b.values(i) := invPi
+  }
 
   when(busy) {
     output.bits.out := multiply.io.out
@@ -41,7 +43,7 @@ class Diffuse() extends Module {
     when(input.valid) {
       val bundle = input.deq()
       reflectance := bundle.reflectance
-      multiply.io.a.values(0) := reflectance.values(0)
+      multiply.io.a := reflectance
       busy := true.B
     }
   }

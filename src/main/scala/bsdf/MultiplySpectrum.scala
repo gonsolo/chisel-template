@@ -12,9 +12,15 @@ class MultiplySpectrum  extends Module {
 
   val io = IO(new MultiplySpectrumBundle)
 
-  val multiply = Module(new Multiply(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS))
-  multiply.io.a := io.a
-  multiply.io.b := io.b
-  io.out := multiply.io.out
+
+  val multipliers = VecInit.fill(CONSTANTS.SPECTRUM_SAMPLES) {
+    val multiply = Module(new Multiply(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS))
+    multiply.io
+  }
+  for (i <- 0 until CONSTANTS.SPECTRUM_SAMPLES) {
+    multipliers(i).a := io.a.values(i)
+    multipliers(i).b := io.b.values(i)
+    io.out.values(i) := multipliers(i).out
+  }
 }
 
