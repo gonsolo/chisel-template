@@ -19,16 +19,16 @@ class MultiplySpec extends AnyFreeSpec with ChiselScalatestTester {
     diffuse.reset.poke(true.B)
     diffuse.clock.step()
     diffuse.reset.poke(false.B)
-    diffuse.io.a.poke(aBits)
-    diffuse.io.b.poke(bBits)
-    diffuse.io.roundingMode.poke(0.U)
-    diffuse.io.detectTininess.poke(0.U)
+    diffuse.io.a.values(0).poke(aBits)
+    diffuse.io.b.values(0).poke(bBits)
+    //diffuse.io.roundingMode.poke(0.U)
+    //diffuse.io.detectTininess.poke(0.U)
     for (i <- 0 until 3) {
       //print(diffuse.io.out.peek().litValue, zero)
       diffuse.clock.step()
     }
     //print(diffuse.io.out.peek().litValue, expected)
-    diffuse.io.out.expect(expected)
+    diffuse.io.out.values(0).expect(expected)
   }
 
   "Multiply should multiply correctly" in {

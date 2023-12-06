@@ -18,10 +18,10 @@ class DiffuseSpec extends AnyFreeSpec with ChiselScalatestTester {
 
       val testValues = for { x <- 0 to 5 } yield x.toFloat / 3.0f
       val inputSeq = testValues.map { case x =>
-        (new DiffuseInputBundle(32)).Lit(_.reflectance -> floatToIntBits(x).S)
+        (new DiffuseInputBundle).Lit(_.reflectance.values(0) -> floatToIntBits(x).S)
       }
       val resultSeq = testValues.map { case x =>
-        (new DiffuseOutputBundle(32)).Lit(_.out -> floatToIntBits(x / Pi.toFloat).S)
+        (new DiffuseOutputBundle).Lit(_.out.values(0) -> floatToIntBits(x / Pi.toFloat).S)
       }
 
       fork {

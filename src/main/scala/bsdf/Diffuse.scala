@@ -5,32 +5,30 @@ import chisel3.util.Decoupled
 import java.lang.Float.floatToIntBits
 import scala.math.Pi
 
-class DiffuseInputBundle(width: Int) extends Bundle {
-      val reflectance = Input(SInt(width.W))
+class DiffuseInputBundle extends Bundle {
+  val reflectance = Input(new Spectrum)
 }
 
-class DiffuseOutputBundle(width: Int) extends Bundle {
-      val out = Output(SInt(width.W))
+class DiffuseOutputBundle extends Bundle {
+      val out = Output(new Spectrum)
 }
 
 class Diffuse() extends Module {
-  val input = IO(Flipped(Decoupled(new DiffuseInputBundle(CONSTANTS.BITS))))
-  val output = IO(Decoupled(new DiffuseOutputBundle(CONSTANTS.BITS)))
-  val multiply = Module(new Multiply(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS))
+  val input = IO(Flipped(Decoupled(new DiffuseInputBundle)))
+  val output = IO(Decoupled(new DiffuseOutputBundle))
+  val multiply = Module(new MultiplySpectrum)
   val invPi = RegInit(floatToIntBits(1.0f / Pi.toFloat).S)
 
   val busy = RegInit(false.B)
   val resultValid = RegInit(false.B)
-  val reflectance = Reg(SInt())
+  val reflectance = Reg(new Spectrum)
 
   input.ready := ! busy
   output.valid := resultValid
   output.bits := DontCare
 
   multiply.io.a := DontCare
-  multiply.io.b := invPi
-  multiply.io.roundingMode := 0.U
-  multiply.io.detectTininess := 0.U
+  multiply.io.b.values(0) := invPi
 
   when(busy) {
     output.bits.out := multiply.io.out
@@ -43,7 +41,7 @@ class Diffuse() extends Module {
     when(input.valid) {
       val bundle = input.deq()
       reflectance := bundle.reflectance
-      multiply.io.a := reflectance
+      multiply.io.a.values(0) := reflectance.values(0)
       busy := true.B
     }
   }
