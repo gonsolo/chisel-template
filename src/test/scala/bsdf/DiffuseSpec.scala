@@ -10,7 +10,7 @@ import scala.math.Pi
 class DiffuseSpec extends AnyFreeSpec with ChiselScalatestTester {
 
   "Diffuse should return inv pi" in {
-    test(new Diffuse) { diffuse =>
+    test(new Diffuse).withAnnotations(Seq(WriteVcdAnnotation)) { diffuse =>
       diffuse.input.initSource()
       diffuse.input.setSourceClock(diffuse.clock)
       diffuse.output.initSink()

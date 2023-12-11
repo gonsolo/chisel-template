@@ -28,22 +28,32 @@ class Diffuse() extends Module {
   output.bits := DontCare
 
   for (i <- 0 until CONSTANTS.SPECTRUM_SAMPLES) {
-    multiplySpectrum.io.a.values(i) := DontCare
-    multiplySpectrum.io.b.values(i) := invPi
+    multiplySpectrum.input.bits.a.values(i) := DontCare
+    multiplySpectrum.input.bits.b.values(i) := DontCare
   }
+  multiplySpectrum.output.ready := false.B
+  multiplySpectrum.input.valid := false.B
 
   when(busy) {
-    output.bits.out := multiplySpectrum.io.out
-    resultValid := true.B
-    when(output.ready && resultValid) {
-      busy := false.B
-      resultValid := false.B
+    multiplySpectrum.input.valid := true.B
+    multiplySpectrum.input.bits.a := reflectance
+    for (i <- 0 until CONSTANTS.SPECTRUM_SAMPLES) {
+      multiplySpectrum.input.bits.b.values(i) := invPi
+    }
+    when (multiplySpectrum.output.valid) {
+      output.bits.out := multiplySpectrum.output.bits.out
+      resultValid := true.B
+      when (output.ready && resultValid) {
+        busy := false.B
+        resultValid := false.B
+        multiplySpectrum.output.ready := true.B
+      }
     }
   }.otherwise {
-    when(input.valid) {
+    multiplySpectrum.output.ready := false.B
+    when (input.valid) {
       val bundle = input.deq()
       reflectance := bundle.reflectance
-      multiplySpectrum.io.a := reflectance
       busy := true.B
     }
   }
