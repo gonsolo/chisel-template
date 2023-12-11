@@ -6,11 +6,11 @@ import java.lang.Float.floatToIntBits
 import scala.math.Pi
 
 class DiffuseInputBundle extends Bundle {
-  val reflectance = Input(new Spectrum)
+  val reflectance = new Spectrum
 }
 
 class DiffuseOutputBundle extends Bundle {
-      val out = Output(new Spectrum)
+      val out = new Spectrum
 }
 
 class Diffuse() extends Module {
