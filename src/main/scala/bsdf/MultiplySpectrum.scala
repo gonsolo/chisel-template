@@ -12,7 +12,6 @@ class MultiplySpectrum  extends Module {
 
   val io = IO(new MultiplySpectrumBundle)
 
-
   val multipliers = VecInit.fill(CONSTANTS.SPECTRUM_SAMPLES) {
     val multiply = Module(new Multiply(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS))
     multiply.io
