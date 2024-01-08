@@ -13,6 +13,6 @@ object CONSTANTS {
   def BITS = EXPONENT_BITS + SIGNIFICAND_BITS
 
   // Number of spectrum samples
-  def SPECTRUM_SAMPLES = 3
+  def SPECTRUM_SAMPLES = 1
 }
 
