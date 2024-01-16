@@ -10,7 +10,7 @@ class DiffuseInputBundle extends Bundle {
 }
 
 class DiffuseOutputBundle extends Bundle {
-      val out = new Spectrum
+  val out = new Spectrum
 }
 
 class Diffuse() extends Module {
@@ -35,25 +35,24 @@ class Diffuse() extends Module {
   multiplySpectrum.input.valid := false.B
 
   when(busy) {
-    multiplySpectrum.input.valid := true.B
     multiplySpectrum.input.bits.a := reflectance
     for (i <- 0 until CONSTANTS.SPECTRUM_SAMPLES) {
       multiplySpectrum.input.bits.b.values(i) := invPi
     }
+    multiplySpectrum.input.valid := true.B
     when (multiplySpectrum.output.valid) {
-      output.bits.out := multiplySpectrum.output.bits.out
       resultValid := true.B
       when (output.ready && resultValid) {
-        busy := false.B
+        output.bits.out := multiplySpectrum.output.bits.out
         resultValid := false.B
         multiplySpectrum.output.ready := true.B
+        busy := false.B
       }
     }
   }.otherwise {
     multiplySpectrum.output.ready := false.B
     when (input.valid) {
-      val bundle = input.deq()
-      reflectance := bundle.reflectance
+      reflectance := input.deq().reflectance
       busy := true.B
     }
   }

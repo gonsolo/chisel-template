@@ -11,7 +11,7 @@ simulate: obj_dir/VDiffuse
 	@./obj_dir/VDiffuse
 obj_dir/VDiffuse: Diffuse.v Simulator.cpp
 	@verilator -CFLAGS -std=c++20 --build --cc --exe $^
-Diffuse.v: $(BSDF)/Constants.scala $(BSDF)/Diffuse.scala $(BSDF)/Multiply.scala $(BSDF)/Writer.scala
+Diffuse.v: $(BSDF)/Constants.scala $(BSDF)/Diffuse.scala $(BSDF)/Multiply.scala $(BSDF)/MultiplySpectrum.scala $(BSDF)/Spectrum.scala $(BSDF)/Writer.scala
 	@sbt run
 t: test
 test:

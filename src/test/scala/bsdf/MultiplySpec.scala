@@ -7,9 +7,10 @@ import java.lang.Float.{floatToIntBits, intBitsToFloat}
 
 class MultiplySpec extends AnyFreeSpec with ChiselScalatestTester {
 
-  def print(value: Int, expected: Int) = {
-      println("out: " + intBitsToFloat(value))
-      println("expected: " + intBitsToFloat(expected))
+  def print(value: SInt, expected: Int) = {
+    val i = value.litValue.toInt
+    println("out: " + intBitsToFloat(i))
+    println("expected: " + intBitsToFloat(expected))
   }
 
   def test_multiply(diffuse: bsdf.Multiply, a: Float, b: Float) = {
@@ -19,16 +20,18 @@ class MultiplySpec extends AnyFreeSpec with ChiselScalatestTester {
     diffuse.reset.poke(true.B)
     diffuse.clock.step()
     diffuse.reset.poke(false.B)
-    diffuse.io.a.poke(aBits)
-    diffuse.io.b.poke(bBits)
-    //diffuse.io.roundingMode.poke(0.U)
-    //diffuse.io.detectTininess.poke(0.U)
+    diffuse.io.a.bits.poke(aBits)
+    diffuse.io.a.valid.poke(true.B)
+    diffuse.io.b.bits.poke(bBits)
+    diffuse.io.b.valid.poke(true.B)
+    diffuse.io.out.ready.poke(true.B)
+    diffuse.io.out.valid.expect(false.B)
     for (i <- 0 until 3) {
-      //print(diffuse.io.out.peek().litValue, zero)
       diffuse.clock.step()
     }
-    //print(diffuse.io.out.peek().litValue, expected)
-    diffuse.io.out.expect(expected)
+    diffuse.io.out.valid.expect(true.B)
+    diffuse.io.out.bits.expect(expected)
+    //print(diffuse.io.out.bits.peek(), expected)
   }
 
   "Multiply should multiply correctly" in {

@@ -21,6 +21,7 @@ class MultiplySpectrum  extends Module {
     val multiply = Module(new Multiply(CONSTANTS.EXPONENT_BITS, CONSTANTS.SIGNIFICAND_BITS))
     multiply.io
   }
+  multipliers.foreach { _.out.ready := true.B }
 
   val busy = RegInit(false.B)
   val resultValid = RegInit(false.B)
@@ -38,9 +39,9 @@ class MultiplySpectrum  extends Module {
 
   when(busy) {
     for (i <- 0 until CONSTANTS.SPECTRUM_SAMPLES) {
-      output.bits.out.values(i) := multipliers(i).out
+      output.bits.out.values(i) := multipliers(i).out.bits
     }
-    resultValid := true.B
+    resultValid := multipliers.map { _.out.valid }.reduce(_ & _)
     when(output.ready && resultValid) {
       busy := false.B
       resultValid := false.B
@@ -51,8 +52,10 @@ class MultiplySpectrum  extends Module {
       a := bundle.a
       b := bundle.b
       for (i <- 0 until CONSTANTS.SPECTRUM_SAMPLES) {
-        multipliers(i).a := a.values(i)
-        multipliers(i).b := b.values(i)
+        multipliers(i).a.bits := a.values(i)
+        multipliers(i).a.valid := true.B
+        multipliers(i).b.bits := b.values(i)
+        multipliers(i).b.valid := true.B
       }
       busy := true.B
     }
