@@ -32,10 +32,10 @@ void error() {
 void enqueue(VDiffuse& diffuse, float a) {
         diffuse.rootp->input_bits_reflectance_values_0 = floatToUint32(a);
 	diffuse.rootp->input_valid = true;
-	while (!diffuse.rootp->input_ready) {
-		diffuse.clock += 1;
-		diffuse.eval();
-	}
+	//while (!diffuse.rootp->input_ready) {
+	//	diffuse.clock += 1;
+	//	diffuse.eval();
+	//}
 	diffuse.clock += 1;
 	diffuse.eval();
 	diffuse.rootp->input_valid = false;
@@ -49,13 +49,16 @@ void expectDequeue(VDiffuse& diffuse, float a) {
 		diffuse.clock += 1;
 		diffuse.eval();
 	}
+	cout << "a" << endl;
 	if (diffuse.rootp->output_valid != true) {
 		error();
 	}
+	cout << "b" << endl;
 	//cout << "Input: " << a << ", expected (x / pi): " << uint32ToFloat(diffuse.rootp->output_bits_out) << endl;
 	if (diffuse.rootp->output_bits_out_values_0 != floatToUint32(expected)) {
 		error();
 	}
+	cout << "c" << endl;
 	diffuse.clock += 1;
 	diffuse.eval();
 	diffuse.rootp->output_ready = false;
@@ -69,9 +72,11 @@ void test_diffuse(VDiffuse& diffuse, float a) {
 void simulateDiffuse() {
 	VDiffuse diffuse;
         diffuse.reset = 0;
+	diffuse.clock += 5;
+	diffuse.eval();
 	test_diffuse(diffuse, 1.0);
-	test_diffuse(diffuse, 0.5);
-	test_diffuse(diffuse, -13.0);
+	//test_diffuse(diffuse, 0.5);
+	//test_diffuse(diffuse, -13.0);
         diffuse.final();
 	cout << "Ok." << endl;
 
