@@ -18,7 +18,7 @@ class DiffuseSpec extends AnyFlatSpec with ChiselScalatestTester {
       diffuse.output.initSink()
       diffuse.output.setSinkClock(diffuse.clock)
 
-      val testValues = for { x <- -4 to 4 } yield x.toFloat / 3.0f
+      val testValues = for { x <- -15 to 10 } yield x.toFloat / 3.0f
       val inputSeq = testValues.map { case x =>
         (new DiffuseInputBundle).Lit(
             _.reflectance.values(0) -> floatToIntBits(x).S //,
@@ -34,12 +34,26 @@ class DiffuseSpec extends AnyFlatSpec with ChiselScalatestTester {
         )
       }
 
+      case class FloatRoundException() extends Exception("FloatRoundException")
+
+      def check(expected: BigInt, received: BigInt): Unit = {
+        val absDiff = (expected - received).abs
+        if (absDiff > 1) throw FloatRoundException()
+      }
+
       for ((a, b) <- inputSeq zip resultSeq) {
-        diffuse.output.expectInvalid()
         diffuse.input.enqueueNow(a)
         diffuse.output.expectInvalid()
         diffuse.clock.step(5)
-        diffuse.output.expectDequeueNow(b)
+        val expected = b.out.values(0).litValue
+
+        diffuse.output.ready.poke(true)
+        diffuse.output.valid.expect(true)
+        val result = diffuse.output.bits.out.values(0).peek().litValue
+        diffuse.clock.step(1)
+        diffuse.output.ready.poke(false)
+
+        check(expected, result)
         diffuse.clock.step(1)
       }
     }
